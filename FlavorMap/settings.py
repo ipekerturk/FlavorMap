@@ -30,11 +30,8 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
-<<<<<<< HEAD
-INSTALLED_APPS = [
-=======
+
 INSTALLED_APPS = ["main",
->>>>>>> 242b70e (MS1)
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,8 +55,8 @@ ROOT_URLCONF = 'FlavorMap.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'] ,
+
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -29,4 +29,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('main.urls')),
 ]
->>>>>>> 242b70e (MS1)
+
