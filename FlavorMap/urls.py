@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 """
 URL configuration for FlavorMap project.
 
