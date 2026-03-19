@@ -1,6 +1,9 @@
-{% extends 'base.html' %}
-{% block content %}
 <h2>{{ restaurant.name }}</h2>
+
 <p>{{ restaurant.description }}</p>
-<p>Rating: {{ restaurant.rating }}</p>
-{% endblock %}
+<p>{{ restaurant.address }}</p>
+<p>{{ restaurant.phone }}</p>
+<p>Category: {{ restaurant.category }}</p>
+<p>Location: {{ restaurant.location }}</p>
+<p>Price: {{ restaurant.price_range }}</p>
+<p>Average Rating: {{ restaurant.average_rating }}</p>

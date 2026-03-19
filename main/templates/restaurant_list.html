@@ -1,13 +1,17 @@
-{% extends 'base.html' %}
-{% block content %}
 <h2>Restaurants</h2>
-<ul>
-    {% for r in restaurants %}
-        <li>
+
+{% for r in restaurants %}
+    <div>
+        <h3>
             <a href="{% url 'restaurant_detail' r.id %}">
-                {{ r.name }} - {{ r.rating }}
+                {{ r.name }}
             </a>
-        </li>
-    {% endfor %}
-</ul>
-{% endblock %}
+        </h3>
+
+        <p>{{ r.description }}</p>
+        <p>Category: {{ r.category }}</p>
+        <p>Location: {{ r.location }}</p>
+        <p>Price: {{ r.price_range }}</p>
+        <p>Rating: {{ r.average_rating }}</p>
+    </div>
+{% endfor %}
