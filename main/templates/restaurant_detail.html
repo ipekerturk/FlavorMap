@@ -1,9 +1,26 @@
 <h2>{{ restaurant.name }}</h2>
 
 <p>{{ restaurant.description }}</p>
-<p>{{ restaurant.address }}</p>
-<p>{{ restaurant.phone }}</p>
-<p>Category: {{ restaurant.category }}</p>
-<p>Location: {{ restaurant.location }}</p>
-<p>Price: {{ restaurant.price_range }}</p>
-<p>Average Rating: {{ restaurant.average_rating }}</p>
+<p><strong>Address:</strong> {{ restaurant.address }}</p>
+<p><strong>Phone:</strong> {{ restaurant.phone }}</p>
+<p><strong>Category:</strong> {{ restaurant.category }}</p>
+<p><strong>Location:</strong> {{ restaurant.location }}</p>
+<p><strong>Price:</strong> {{ restaurant.price_range }}</p>
+<p><strong>Average Rating:</strong> {{ restaurant.average_rating }}</p>
+
+<hr>
+
+<h3>Reviews</h3>
+
+{% if reviews %}
+    {% for review in reviews %}
+        <div>
+            <p><strong>Rating:</strong> ⭐ {{ review.rating }}/5</p>
+            <p>{{ review.comment }}</p>
+            <p><small>{{ review.created_at }}</small></p>
+        </div>
+        <hr>
+    {% endfor %}
+{% else %}
+    <p>No reviews yet.</p>
+{% endif %}

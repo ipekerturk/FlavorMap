@@ -46,7 +46,9 @@ class Restaurant(models.Model):
 class Review(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    rating = models.IntegerField()
+    rating = models.IntegerField(
+        choices=[(i, i) for i in range(1, 6)]
+    )
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
