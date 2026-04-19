@@ -1,7 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Restaurant, Review, Category, Location
 from django.contrib.auth.forms import UserCreationForm
-
+from django.contrib.auth.decorators import login_required
+from .forms import RestaurantForm, ReviewForm
+from django.db.models import Q
 
 def home(request):
     return render(request, 'home.html')
