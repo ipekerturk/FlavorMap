@@ -53,3 +53,16 @@ def register(request):
         form = UserCreationForm()
 
     return render(request, 'register.html', {'form': form})
+
+@login_required
+def restaurant_create(request):
+    if request.method == "POST":
+        form = RestaurantForm(request.POST, request.FILES)
+        if form.is_valid():
+            restaurant = form.save()
+            restaurant.save()
+            return redirect('restaurant_list')
+    else:
+        form = RestaurantForm()
+    return render(request, 'restaurant_form.html', {'form': form, 'title': 'Add Restaurant'})
+
