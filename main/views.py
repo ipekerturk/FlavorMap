@@ -39,6 +39,7 @@ def restaurant_detail(request, id):
     context = {
         'restaurant': restaurant,
         'reviews': reviews,
+        'review_form': review_form,
     }
 
     return render(request, 'restaurant_detail.html', context)
