@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="text-center mb-4">Login to FlavorMap</h2>
+                    <p class="text-center text-muted">Please enter your credentials to explore restaurants.</p>
+                    <hr>
+
+                    <form method="post">
+                        {% csrf_token %} <div class="mb-3">
+                            {{ form.as_p }} </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+
+                    <div class="mt-4 text-center">
+                        <p>New to FlavorMap? <a href="{% url 'register' %}">Create an account here</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
