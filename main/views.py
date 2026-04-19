@@ -26,7 +26,16 @@ def restaurant_list(request):
 def restaurant_detail(request, id):
     restaurant = get_object_or_404(Restaurant, id=id)
     reviews = Review.objects.filter(restaurant=restaurant)
-
+    if request.method == "POST" and request.user.is_authenticated:
+        review_form = ReviewForm(request.POST)
+        if review_form.is_valid():
+            review = review_form.save(commit=False)
+            review.restaurant = restaurant
+            review.user = request.user
+            review.save()
+            return redirect('restaurant_detail', id=restaurant.id)
+    else:
+        review_form = ReviewForm()
     context = {
         'restaurant': restaurant,
         'reviews': reviews,
