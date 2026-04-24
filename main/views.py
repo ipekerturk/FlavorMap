@@ -6,7 +6,8 @@ from .forms import RestaurantForm, ReviewForm
 from django.db.models import Q
 
 def home(request):
-    return render(request, 'home.html')
+    popular_restaurants = Restaurant.objects.all().order_by('-id')[:3]
+    return render(request, 'home.html', {'restaurants': popular_restaurants})
 
 
 def restaurant_list(request):
