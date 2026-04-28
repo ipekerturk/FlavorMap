@@ -1,26 +1,69 @@
-<h2>{{ restaurant.name }}</h2>
+{% extends 'base.html' %}
 
-<p>{{ restaurant.description }}</p>
-<p><strong>Address:</strong> {{ restaurant.address }}</p>
-<p><strong>Phone:</strong> {{ restaurant.phone }}</p>
-<p><strong>Category:</strong> {{ restaurant.category }}</p>
-<p><strong>Location:</strong> {{ restaurant.location }}</p>
-<p><strong>Price:</strong> {{ restaurant.price_range }}</p>
-<p><strong>Average Rating:</strong> {{ restaurant.average_rating }}</p>
+{% block content %}
 
-<hr>
 
-<h3>Reviews</h3>
+<div class="row mt-4">
+    <div class="col-md-6 mb-4">
+        {% if restaurant.image %}
+            <img src="{{ restaurant.image.url }}" class="img-fluid rounded shadow" alt="{{ restaurant.name }}" style="width: 100%; height: 400px; object-fit: cover;">
+        {% else %}
+            <div class="d-flex align-items-center justify-content-center rounded shadow bg-secondary text-white" style="width: 100%; height: 400px;">
+                <div class="text-center">
+                    <i class="fas fa-image fa-3x mb-2"></i>
+                    <p>No Photo Available</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
 
-{% if reviews %}
-    {% for review in reviews %}
-        <div>
-            <p><strong>Rating:</strong> ⭐ {{ review.rating }}/5</p>
-            <p>{{ review.comment }}</p>
-            <p><small>{{ review.created_at }}</small></p>
-        </div>
+    <div class="col-md-6">
+        <h1 class="display-5 fw-bold">{{ restaurant.name }}</h1>
+        <span class="badge bg-primary mb-2 fs-6">{{ restaurant.category.name }}</span>
+        <span class="text-muted ms-2"><i class="fas fa-map-marker-alt"></i> {{ restaurant.location.name }}</span>
+
         <hr>
-    {% endfor %}
-{% else %}
-    <p>No reviews yet.</p>
-{% endif %}
+        <p><strong>Address:</strong> {{ restaurant.address|default:"Address not provided" }}</p>
+        <p><strong>Phone:</strong> {{ restaurant.phone|default:"Phone not provided" }}</p>
+
+        <p>
+            <strong><i class="far fa-clock"></i> Opening Hours:</strong>
+            <span class="text-muted">
+                {% if restaurant.opening_hours %}
+                    {{ restaurant.opening_hours }}
+                {% else %}
+                    Not specified
+                {% endif %}
+            </span>
+        </p>
+
+        <p class="fs-5"><strong>Average Rating:</strong> <span class="text-warning fw-bold">{{ restaurant.average_rating }} / 5 ⭐</span></p>
+
+        {% if user.is_authenticated %}
+            <form action="{% url 'toggle_favorite' restaurant.id %}" method="POST" class="mt-4">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-outline-danger w-100">
+                    <i class="fas fa-heart"></i> Add / Remove Favorite
+                </button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-12">
+        <h3>Reviews & Ratings ⭐</h3>
+        <hr>
+        {% for review in restaurant.reviews.all %}
+            <div class="card mb-3 shadow-sm border-0 bg-light">
+                <div class="card-body">
+                    <strong>{{ review.user.username }}</strong> - {{ review.rating }}/5 ⭐
+                    <p class="mt-2">{{ review.comment }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-muted">No reviews yet. Be the first to review!</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

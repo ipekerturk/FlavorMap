@@ -1,9 +1,43 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Home</title>
-</head>
-<body>
-    <h1>TEST WORKS 🚀</h1>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-dark text-white rounded-3 shadow text-center">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">Discover the Best Flavors 🚀</h1>
+        <p class="fs-4">Explore top-rated restaurants, read honest reviews, and find your next favorite spot in Istanbul.</p>
+        <a href="{% url 'restaurant_list' %}" class="btn btn-primary btn-lg px-4 fw-bold">Explore All Restaurants</a>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold">Popular Spots 🔥</h2>
+        <a href="{% url 'restaurant_list' %}" class="text-decoration-none">View All</a>
+    </div>
+
+    <div class="row">
+        {% for restaurant in popular_restaurants %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm border-0">
+                    {% if restaurant.image %}
+                        <img src="{{ restaurant.image.url }}" class="card-img-top" alt="{{ restaurant.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                        <div class="bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 200px;">
+                            <i class="fas fa-image fa-2x"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body text-center">
+                        <h5 class="card-title fw-bold">{{ restaurant.name }}</h5>
+                        <p class="text-warning fw-bold fs-5">{{ restaurant.average_rating }} ⭐</p>
+                        <a href="{% url 'restaurant_detail' restaurant.id %}" class="btn btn-outline-dark btn-sm w-100 fw-bold">See Details</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12 text-center text-muted">
+                <p>No restaurants added yet.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

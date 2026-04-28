@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Location, Restaurant, Review
+from .models import Category, Location, Restaurant, Review, MenuItem
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
@@ -10,3 +10,4 @@ class RestaurantAdmin(admin.ModelAdmin):
 admin.site.register(Category)
 admin.site.register(Location)
 admin.site.register(Review)
+admin.site.register(MenuItem)

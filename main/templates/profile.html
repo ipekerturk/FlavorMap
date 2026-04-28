@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Hello, {{ user.username }}! 👋</h2>
+    <p class="text-muted">Here you can manage your favorites and see your activity.</p>
+
+    <hr>
+
+    <div class="row">
+        <div class="col-md-6">
+            <h3>❤️ My Favorite Restaurants</h3>
+            <div class="list-group mt-3">
+                {% for fav in favorites %}
+                    <a href="{% url 'restaurant_detail' fav.restaurant.id %}" class="list-group-item list-group-item-action">
+                        {{ fav.restaurant.name }}
+                    </a>
+                {% empty %}
+                    <p class="text-muted">No favorite restaurants yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h3>💬 My Reviews</h3>
+            <div class="list-group mt-3">
+                {% for review in reviews %}
+                    <div class="list-group-item">
+                        <strong>For {{ review.restaurant.name }}:</strong>
+                        <p class="mb-1">"{{ review.text }}"</p>
+                        <small class="text-warning">Rating: {{ review.rating }} ⭐</small>
+                    </div>
+                {% empty %}
+                    <p class="text-muted">You haven't written any reviews yet.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
