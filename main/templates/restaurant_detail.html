@@ -2,7 +2,6 @@
 
 {% block content %}
 
-
 <div class="row mt-4">
     <div class="col-md-6 mb-4">
         {% if restaurant.image %}
@@ -19,12 +18,18 @@
 
     <div class="col-md-6">
         <h1 class="display-5 fw-bold">{{ restaurant.name }}</h1>
+
         <span class="badge bg-primary mb-2 fs-6">{{ restaurant.category.name }}</span>
-        <span class="text-muted ms-2"><i class="fas fa-map-marker-alt"></i> {{ restaurant.location.name }}</span>
+        <span class="text-muted ms-2">
+            <i class="fas fa-map-marker-alt"></i> {{ restaurant.location }}
+        </span>
 
         <hr>
+
+        <p><strong>Description:</strong> {{ restaurant.description }}</p>
         <p><strong>Address:</strong> {{ restaurant.address|default:"Address not provided" }}</p>
         <p><strong>Phone:</strong> {{ restaurant.phone|default:"Phone not provided" }}</p>
+        <p><strong>Price Range:</strong> {{ restaurant.price_range }}</p>
 
         <p>
             <strong><i class="far fa-clock"></i> Opening Hours:</strong>
@@ -37,7 +42,10 @@
             </span>
         </p>
 
-        <p class="fs-5"><strong>Average Rating:</strong> <span class="text-warning fw-bold">{{ restaurant.average_rating }} / 5 ⭐</span></p>
+        <p class="fs-5">
+            <strong>Average Rating:</strong>
+            <span class="text-warning fw-bold">{{ restaurant.average_rating }} / 5 ⭐</span>
+        </p>
 
         {% if user.is_authenticated %}
             <form action="{% url 'toggle_favorite' restaurant.id %}" method="POST" class="mt-4">
@@ -46,6 +54,15 @@
                     <i class="fas fa-heart"></i> Add / Remove Favorite
                 </button>
             </form>
+
+            <div class="mt-3 d-flex gap-2">
+                <a href="{% url 'restaurant_edit' restaurant.id %}" class="btn btn-warning w-50">
+                    Edit Restaurant
+                </a>
+                <a href="{% url 'restaurant_delete' restaurant.id %}" class="btn btn-danger w-50">
+                    Delete Restaurant
+                </a>
+            </div>
         {% endif %}
     </div>
 </div>
@@ -54,6 +71,7 @@
     <div class="col-md-12">
         <h3>Reviews & Ratings ⭐</h3>
         <hr>
+
         {% for review in restaurant.reviews.all %}
             <div class="card mb-3 shadow-sm border-0 bg-light">
                 <div class="card-body">
@@ -66,4 +84,5 @@
         {% endfor %}
     </div>
 </div>
+
 {% endblock %}

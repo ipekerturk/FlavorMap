@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h2>Delete Restaurant</h2>
+            <p>Are you sure you want to delete <strong>{{ restaurant.name }}</strong>?</p>
+
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                <a href="{% url 'restaurant_detail' restaurant.id %}" class="btn btn-secondary">Cancel</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

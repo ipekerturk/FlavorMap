@@ -172,3 +172,33 @@ def add_review_reply(request, review_id):
             parent=parent_review
         )
     return redirect('restaurant_detail', id=parent_review.restaurant.id)
+
+@login_required
+def restaurant_edit(request, id):
+    restaurant = get_object_or_404(Restaurant, id=id)
+
+    if request.method == "POST":
+        form = RestaurantForm(request.POST, request.FILES, instance=restaurant)
+        if form.is_valid():
+            form.save()
+            return redirect('restaurant_detail', id=restaurant.id)
+    else:
+        form = RestaurantForm(instance=restaurant)
+
+    return render(request, 'restaurant_form.html', {
+        'form': form,
+        'title': 'Edit Restaurant'
+    })
+
+
+@login_required
+def restaurant_delete(request, id):
+    restaurant = get_object_or_404(Restaurant, id=id)
+
+    if request.method == "POST":
+        restaurant.delete()
+        return redirect('restaurant_list')
+
+    return render(request, 'restaurant_confirm_delete.html', {
+        'restaurant': restaurant
+    })
