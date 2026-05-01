@@ -6,35 +6,47 @@ from .forms import RestaurantForm, ReviewForm
 from django.db.models import Q
 
 
-
-
 def restaurant_list(request):
-    # Kullanıcının arama ve filtreleme kelimelerini alıyoruz (URL'den GET ile)
     query = request.GET.get('q', '')
     category_id = request.GET.get('category', '')
+    location_id = request.GET.get('location', '')
+    price_range = request.GET.get('price_range', '')
 
-    # Önce tüm restoranları ve kategorileri veritabanından çekiyoruz
     restaurants = Restaurant.objects.all()
     categories = Category.objects.all()
+    locations = Location.objects.all()
 
-    # Eğer arama kutusuna bir şey yazılmışsa, isminde o kelime geçenleri filtrele (icontains: büyük/küçük harf duyarsız arama yapar)
     if query:
-        restaurants = restaurants.filter(name__icontains=query)
+        restaurants = restaurants.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query) |
+            Q(location__city__icontains=query) |
+            Q(location__district__icontains=query)
+        )
 
-    # Eğer dropdown'dan bir kategori seçilmişse, sadece o kategoriye ait olanları getir
     if category_id:
         restaurants = restaurants.filter(category_id=category_id)
-        category_id = int(category_id)  # HTML'de seçili kalması için sayıya çeviriyoruz
+        category_id = int(category_id)
+
+    if location_id:
+        restaurants = restaurants.filter(location_id=location_id)
+        location_id = int(location_id)
+
+    if price_range:
+        restaurants = restaurants.filter(price_range=price_range)
 
     context = {
         'restaurants': restaurants,
         'categories': categories,
+        'locations': locations,
         'query': query,
         'category_id': category_id,
+        'location_id': location_id,
+        'price_range': price_range,
+        'price_choices': Restaurant.PRICE_CHOICES,
     }
 
     return render(request, 'restaurant_list.html', context)
-
 
 def restaurant_detail(request, id):
     restaurant = get_object_or_404(Restaurant, id=id)

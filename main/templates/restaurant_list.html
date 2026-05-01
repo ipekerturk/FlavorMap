@@ -7,10 +7,11 @@
     <div class="card shadow-sm border-0 mb-5 p-3 bg-light">
         <form method="GET" action="{% url 'restaurant_list' %}">
             <div class="row g-2 align-items-center">
-                <div class="col-md-6">
-                    <input type="text" name="q" class="form-control form-control-lg" placeholder="Search by restaurant name..." value="{{ query }}">
+                <div class="col-md-3">
+                    <input type="text" name="q" class="form-control form-control-lg" placeholder="Search restaurants..." value="{{ query }}">
                 </div>
-                <div class="col-md-4">
+
+                <div class="col-md-3">
                     <select name="category" class="form-select form-select-lg">
                         <option value="">All Categories</option>
                         {% for cat in categories %}
@@ -20,9 +21,32 @@
                         {% endfor %}
                     </select>
                 </div>
+
+                <div class="col-md-3">
+                    <select name="location" class="form-select form-select-lg">
+                        <option value="">All Locations</option>
+                        {% for loc in locations %}
+                            <option value="{{ loc.id }}" {% if location_id == loc.id %}selected{% endif %}>
+                                {{ loc.city }} - {{ loc.district }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <div class="col-md-2">
+                    <select name="price_range" class="form-select form-select-lg">
+                        <option value="">All Prices</option>
+                        {% for value, label in price_choices %}
+                            <option value="{{ value }}" {% if price_range == value %}selected{% endif %}>
+                                {{ label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-1">
                     <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
-                        <i class="fas fa-search"></i> Search
+                        <i class="fas fa-search"></i>
                     </button>
                 </div>
             </div>
@@ -44,9 +68,19 @@
 
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title fw-bold text-dark">{{ restaurant.name }}</h5>
+
                         <p class="card-text text-muted mb-2">
                             <i class="fas fa-utensils"></i> {{ restaurant.category.name }}
                         </p>
+
+                        <p class="card-text text-muted mb-2">
+                            <i class="fas fa-map-marker-alt"></i> {{ restaurant.location }}
+                        </p>
+
+                        <p class="card-text mb-2">
+                            <strong>Price:</strong> {{ restaurant.price_range }}
+                        </p>
+
                         <p class="card-text">
                             <span class="text-warning fw-bold fs-5">{{ restaurant.average_rating }} ⭐</span>
                         </p>
