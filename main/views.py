@@ -57,6 +57,7 @@ def restaurant_detail(request, id):
 
     user_review_exists = False
     is_favorite = False
+    is_owner = False
     error_message = None
 
     if request.user.is_authenticated:
@@ -70,6 +71,8 @@ def restaurant_detail(request, id):
             restaurant=restaurant,
             user=request.user
         ).exists()
+
+        is_owner = restaurant.owner == request.user
 
     if request.method == "POST" and request.user.is_authenticated and not user_review_exists:
         review_form = ReviewForm(request.POST)
@@ -96,6 +99,7 @@ def restaurant_detail(request, id):
         'menu_items': menu_items,
         'user_review_exists': user_review_exists,
         'is_favorite': is_favorite,
+        'is_owner': is_owner,
         'error_message': error_message,
     }
 
@@ -140,7 +144,9 @@ def restaurant_create(request):
         if form.is_valid():
             try:
                 with transaction.atomic():
-                    restaurant = form.save()
+                    restaurant = form.save(commit=False)
+                    restaurant.owner = request.user
+                    restaurant.save()
 
                 return redirect('restaurant_detail', id=restaurant.id)
 
@@ -315,7 +321,7 @@ def review_delete(request, review_id):
 
 @login_required
 def restaurant_edit(request, id):
-    restaurant = get_object_or_404(Restaurant, id=id)
+    restaurant = get_object_or_404(Restaurant, id=id, owner=request.user)
 
     if request.method == "POST":
         form = RestaurantForm(request.POST, request.FILES, instance=restaurant)
@@ -344,7 +350,7 @@ def restaurant_edit(request, id):
 
 @login_required
 def restaurant_delete(request, id):
-    restaurant = get_object_or_404(Restaurant, id=id)
+    restaurant = get_object_or_404(Restaurant, id=id, owner=request.user)
 
     if request.method == "POST":
         try:
