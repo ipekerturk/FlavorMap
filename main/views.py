@@ -56,6 +56,7 @@ def restaurant_detail(request, id):
     menu_items = MenuItem.objects.filter(restaurant=restaurant)
 
     user_review_exists = False
+    is_favorite = False
     error_message = None
 
     if request.user.is_authenticated:
@@ -63,6 +64,11 @@ def restaurant_detail(request, id):
             restaurant=restaurant,
             user=request.user,
             parent__isnull=True
+        ).exists()
+
+        is_favorite = Favorite.objects.filter(
+            restaurant=restaurant,
+            user=request.user
         ).exists()
 
     if request.method == "POST" and request.user.is_authenticated and not user_review_exists:
@@ -89,6 +95,7 @@ def restaurant_detail(request, id):
         'review_form': review_form,
         'menu_items': menu_items,
         'user_review_exists': user_review_exists,
+        'is_favorite': is_favorite,
         'error_message': error_message,
     }
 
