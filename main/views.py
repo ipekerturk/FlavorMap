@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from .forms import RestaurantForm, ReviewForm
 from django.db.models import Q, Avg
+from django.db import transaction, IntegrityError
 
 
 def restaurant_list(request):
@@ -55,6 +56,8 @@ def restaurant_detail(request, id):
     menu_items = MenuItem.objects.filter(restaurant=restaurant)
 
     user_review_exists = False
+    error_message = None
+
     if request.user.is_authenticated:
         user_review_exists = Review.objects.filter(
             restaurant=restaurant,
@@ -64,12 +67,19 @@ def restaurant_detail(request, id):
 
     if request.method == "POST" and request.user.is_authenticated and not user_review_exists:
         review_form = ReviewForm(request.POST)
+
         if review_form.is_valid():
-            review = review_form.save(commit=False)
-            review.restaurant = restaurant
-            review.user = request.user
-            review.save()
-            return redirect('restaurant_detail', id=restaurant.id)
+            try:
+                with transaction.atomic():
+                    review = review_form.save(commit=False)
+                    review.restaurant = restaurant
+                    review.user = request.user
+                    review.save()
+
+                return redirect('restaurant_detail', id=restaurant.id)
+
+            except IntegrityError:
+                error_message = "An error occurred while saving your review. Please try again."
     else:
         review_form = ReviewForm()
 
@@ -79,6 +89,7 @@ def restaurant_detail(request, id):
         'review_form': review_form,
         'menu_items': menu_items,
         'user_review_exists': user_review_exists,
+        'error_message': error_message,
     }
 
     return render(request, 'restaurant_detail.html', context)
@@ -95,9 +106,19 @@ def contact(request):
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
+
         if form.is_valid():
-            form.save()
-            return redirect('login')
+            try:
+                with transaction.atomic():
+                    form.save()
+
+                return redirect('login')
+
+            except IntegrityError:
+                return render(request, 'register.html', {
+                    'form': form,
+                    'error_message': 'An error occurred while creating your account.'
+                })
     else:
         form = UserCreationForm()
 
@@ -108,24 +129,45 @@ def register(request):
 def restaurant_create(request):
     if request.method == "POST":
         form = RestaurantForm(request.POST, request.FILES)
+
         if form.is_valid():
-            restaurant = form.save()
-            restaurant.save()
-            return redirect('restaurant_list')
+            try:
+                with transaction.atomic():
+                    restaurant = form.save()
+
+                return redirect('restaurant_detail', id=restaurant.id)
+
+            except IntegrityError:
+                return render(request, 'restaurant_form.html', {
+                    'form': form,
+                    'title': 'Add Restaurant',
+                    'error_message': 'An error occurred while creating the restaurant.'
+                })
     else:
         form = RestaurantForm()
 
-    return render(request, 'restaurant_form.html', {'form': form, 'title': 'Add Restaurant'})
+    return render(request, 'restaurant_form.html', {
+        'form': form,
+        'title': 'Add Restaurant'
+    })
 
 
 @login_required
 def toggle_favorite(request, id):
     restaurant = get_object_or_404(Restaurant, id=id)
 
-    favorite, created = Favorite.objects.get_or_create(user=request.user, restaurant=restaurant)
+    try:
+        with transaction.atomic():
+            favorite, created = Favorite.objects.get_or_create(
+                user=request.user,
+                restaurant=restaurant
+            )
 
-    if not created:
-        favorite.delete()
+            if not created:
+                favorite.delete()
+
+    except IntegrityError:
+        pass
 
     return redirect('restaurant_detail', id=id)
 
@@ -162,22 +204,28 @@ def home(request):
 def add_review(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
 
-    already_reviewed = Review.objects.filter(
-        restaurant=restaurant,
-        user=request.user,
-        parent__isnull=True
-    ).exists()
+    if request.method == 'POST':
+        try:
+            with transaction.atomic():
+                already_reviewed = Review.objects.filter(
+                    restaurant=restaurant,
+                    user=request.user,
+                    parent__isnull=True
+                ).exists()
 
-    if request.method == 'POST' and not already_reviewed:
-        comment = request.POST.get('comment')
-        rating = request.POST.get('rating')
+                if not already_reviewed:
+                    comment = request.POST.get('comment')
+                    rating = request.POST.get('rating')
 
-        Review.objects.create(
-            restaurant=restaurant,
-            user=request.user,
-            comment=comment,
-            rating=rating
-        )
+                    Review.objects.create(
+                        restaurant=restaurant,
+                        user=request.user,
+                        comment=comment,
+                        rating=rating
+                    )
+
+        except IntegrityError:
+            pass
 
     return redirect('restaurant_detail', id=restaurant_id)
 
@@ -190,13 +238,18 @@ def add_review_reply(request, review_id):
         comment = request.POST.get('comment')
 
         if comment:
-            Review.objects.create(
-                restaurant=parent_review.restaurant,
-                user=request.user,
-                comment=comment,
-                rating=5,
-                parent=parent_review
-            )
+            try:
+                with transaction.atomic():
+                    Review.objects.create(
+                        restaurant=parent_review.restaurant,
+                        user=request.user,
+                        comment=comment,
+                        rating=5,
+                        parent=parent_review
+                    )
+
+            except IntegrityError:
+                pass
 
     return redirect('restaurant_detail', id=parent_review.restaurant.id)
 
@@ -207,9 +260,20 @@ def restaurant_edit(request, id):
 
     if request.method == "POST":
         form = RestaurantForm(request.POST, request.FILES, instance=restaurant)
+
         if form.is_valid():
-            form.save()
-            return redirect('restaurant_detail', id=restaurant.id)
+            try:
+                with transaction.atomic():
+                    form.save()
+
+                return redirect('restaurant_detail', id=restaurant.id)
+
+            except IntegrityError:
+                return render(request, 'restaurant_form.html', {
+                    'form': form,
+                    'title': 'Edit Restaurant',
+                    'error_message': 'An error occurred while updating the restaurant.'
+                })
     else:
         form = RestaurantForm(instance=restaurant)
 
@@ -224,8 +288,17 @@ def restaurant_delete(request, id):
     restaurant = get_object_or_404(Restaurant, id=id)
 
     if request.method == "POST":
-        restaurant.delete()
-        return redirect('restaurant_list')
+        try:
+            with transaction.atomic():
+                restaurant.delete()
+
+            return redirect('restaurant_list')
+
+        except IntegrityError:
+            return render(request, 'restaurant_confirm_delete.html', {
+                'restaurant': restaurant,
+                'error_message': 'An error occurred while deleting the restaurant.'
+            })
 
     return render(request, 'restaurant_confirm_delete.html', {
         'restaurant': restaurant
