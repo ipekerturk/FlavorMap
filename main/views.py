@@ -368,3 +368,59 @@ def restaurant_delete(request, id):
     return render(request, 'restaurant_confirm_delete.html', {
         'restaurant': restaurant
     })
+# 🔥 MENU CREATE
+@login_required
+def menu_create(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id, owner=request.user)
+
+    if request.method == "POST":
+        form = MenuItemForm(request.POST)
+
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.restaurant = restaurant
+            item.save()
+
+            return redirect('restaurant_detail', id=restaurant.id)
+    else:
+        form = MenuItemForm()
+
+    return render(request, 'menu_item_form.html', {
+        'form': form,
+        'title': 'Add Menu Item'
+    })
+
+
+# 🔥 MENU EDIT
+@login_required
+def menu_edit(request, id):
+    item = get_object_or_404(MenuItem, id=id, restaurant__owner=request.user)
+
+    if request.method == "POST":
+        form = MenuItemForm(request.POST, instance=item)
+
+        if form.is_valid():
+            form.save()
+            return redirect('restaurant_detail', id=item.restaurant.id)
+    else:
+        form = MenuItemForm(instance=item)
+
+    return render(request, 'menu_item_form.html', {
+        'form': form,
+        'title': 'Edit Menu Item'
+    })
+
+
+# 🔥 MENU DELETE
+@login_required
+def menu_delete(request, id):
+    item = get_object_or_404(MenuItem, id=id, restaurant__owner=request.user)
+    restaurant_id = item.restaurant.id
+
+    if request.method == "POST":
+        item.delete()
+        return redirect('restaurant_detail', id=restaurant_id)
+
+    return render(request, 'menu_item_confirm_delete.html', {
+        'item': item
+    })

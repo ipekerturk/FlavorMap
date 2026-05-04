@@ -10,6 +10,10 @@ urlpatterns = [
     path('restaurants/<int:id>/edit/', views.restaurant_edit, name='restaurant_edit'),
     path('restaurants/<int:id>/delete/', views.restaurant_delete, name='restaurant_delete'),
 
+    path('menu/add/<int:restaurant_id>/', views.menu_create, name='menu_create'),
+    path('menu/<int:id>/edit/', views.menu_edit, name='menu_edit'),
+    path('menu/<int:id>/delete/', views.menu_delete, name='menu_delete'),
+
     path('about/', views.about, name='about'),
     path('contact/', views.contact, name='contact'),
     path('register/', views.register, name='register'),
