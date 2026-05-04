@@ -69,10 +69,34 @@
 
 <div class="row mt-5">
     <div class="col-md-12">
+        <h3>Menu 🍽️</h3>
+        <hr>
+
+        {% for item in menu_items %}
+            <div class="card mb-2 shadow-sm border-0">
+                <div class="card-body">
+                    <h5 class="mb-1">{{ item.name }}</h5>
+
+                    {% if item.category %}
+                        <span class="badge bg-secondary mb-2">{{ item.category }}</span>
+                    {% endif %}
+
+                    <p class="text-muted mb-1">{{ item.description }}</p>
+                    <strong>{{ item.price }} ₺</strong>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-muted">No menu items available.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-12">
         <h3>Reviews & Ratings ⭐</h3>
         <hr>
 
-        {% for review in restaurant.reviews.all %}
+        {% for review in reviews %}
             <div class="card mb-3 shadow-sm border-0 bg-light">
                 <div class="card-body">
                     <strong>{{ review.user.username }}</strong> - {{ review.rating }}/5 ⭐
