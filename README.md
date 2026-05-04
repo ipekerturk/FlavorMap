@@ -1,54 +1,101 @@
 # 🍽️ FlavorMap
 
-FlavorMap is a team-based web application developed to help users discover restaurants based on categories, locations, and user experiences.
+FlavorMap is a web application where users can explore restaurants, leave reviews, and manage their own content.  
+The project focuses on building a dynamic, database-driven platform using Django.
 
-## 👥 Team Project
-This project was developed collaboratively by a team of 4 students as part of a web programming course.  
-Each team member contributed to different parts of the application including backend logic, frontend design, and database structure.
+---
 
 ## 🚀 Features
-- Browse restaurants with detailed information  
-- View restaurant details (description, location, category)  
-- Filter restaurants by category and location  
-- User reviews and rating system  
-- Admin panel for managing restaurants, categories, and data  
+
+### 👤 Authentication
+- User registration & login system
+- Profile page showing user reviews and favorites
+
+### 🍴 Restaurants
+- Create, edit, and delete restaurants
+- Upload images and add opening hours
+- Filter by category, location, and price range
+- Search functionality
+
+### ⭐ Reviews
+- Users can leave **one review per restaurant**
+- Edit and delete their own reviews
+- Reply to other users’ reviews (nested replies)
+
+### ❤️ Favorites
+- Add / remove restaurants from favorites
+- Dynamic UI (filled / empty heart)
+
+### 📋 Menu System
+- Restaurant owners can:
+  - Add menu items
+  - Edit menu items
+  - Delete menu items
+- Menu items include:
+  - Name, description, category, and price
+
+### 🔐 Authorization
+- Only restaurant owners can edit/delete their restaurants
+- Only review owners can edit/delete reviews
+- Only owners can manage menu items
+
+### ⚙️ Advanced Features
+- Atomic transactions used for critical operations
+- Database consistency ensured
+- Basic error handling implemented
+
+---
 
 ## 🛠️ Technologies Used
-- Python  
-- Django  
-- HTML / CSS  
-- SQLite  
 
-## 🧠 Learning Outcomes
-Through this project, we gained hands-on experience in:
-- Building a full-stack web application using Django  
-- Working with relational databases and models  
-- Implementing CRUD operations  
-- Collaborating as a team using Git and GitHub  
-- Structuring a real-world web project  
+- Python
+- Django
+- SQLite
+- HTML / CSS (Bootstrap)
+- Django ORM
+
+---
+
+## 📂 Project Structure
+main/
+├── models.py
+├── views.py
+├── forms.py
+├── urls.py
+├── templates/
+---
 
 ## ▶️ How to Run
-1. Clone the repository:
-   git clone https://github.com/ipekerturk/FlavorMap.git
 
-2. Navigate into the project directory:
-   cd FlavorMap
+```bash
+git clone https://github.com/ipekerturk/FlavorMap.git
+cd FlavorMap
 
-3. Install dependencies:
-   pip install -r requirements.txt
+python3 -m venv venv
+source venv/bin/activate
 
-4. Run the development server:
-   python manage.py runserver
+pip install -r requirements.txt
 
-5. Open your browser and go to:
-   http://127.0.0.1:8000/
+python manage.py migrate
+python manage.py runserver
+---
+🎯 Project Goal
 
-## 📌 Notes
-- This project is for educational purposes.  
-- The database is not shared across all team members, so some data may vary locally.  
+The goal of this project is to practice:
 
-## 👩‍💻 Contributors
-- Ipek Erturk  
-- Fatmanur Demir
-- Begum Uzuner
-- Zeynep Uygun
+* Django MVC structure
+* Database relationships
+* CRUD operations
+* Authentication & authorization
+* Real-world web application logic
+---
+👨‍💻 Team Project
+
+This project was developed as a team project.
+Each member contributed to different parts of the system including backend logic, UI, and database design.
+---
+📌 Notes
+
+* This project is built for educational purposes
+* Focus is on functionality rather than production-level design
+---
