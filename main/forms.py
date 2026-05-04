@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from .models import Restaurant, Review
 
 
-
 class RegisterForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Şifre'}))
 
@@ -16,12 +15,22 @@ class RegisterForm(forms.ModelForm):
         }
 
 
-
 class RestaurantForm(forms.ModelForm):
     class Meta:
         model = Restaurant
 
-        fields = ['name', 'category', 'location', 'description', 'price_range', 'address', 'phone', 'image']
+        fields = [
+            'name',
+            'category',
+            'location',
+            'description',
+            'price_range',
+            'address',
+            'phone',
+            'image',
+            'opening_hours',  # ✅ EKLENDİ
+        ]
+
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'category': forms.Select(attrs={'class': 'form-control'}),
@@ -31,8 +40,8 @@ class RestaurantForm(forms.ModelForm):
             'address': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
             'phone': forms.TextInput(attrs={'class': 'form-control'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
+            'opening_hours': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Mon-Fri 09:00 - 22:00'}),
         }
-
 
 
 class ReviewForm(forms.ModelForm):
@@ -40,8 +49,11 @@ class ReviewForm(forms.ModelForm):
         model = Review
         fields = ['rating', 'comment']
         widgets = {
-
-            'rating': forms.Select(choices=[(i, f"{i} Yıldız") for i in range(1, 6)], attrs={'class': 'form-control'}),
+            'rating': forms.Select(
+                choices=[(i, f"{i} Yıldız") for i in range(1, 6)],
+                attrs={'class': 'form-control'}
+            ),
             'comment': forms.Textarea(
-                attrs={'rows': 4, 'class': 'form-control', 'placeholder': 'Yorumunuzu buraya yazın...'}),
+                attrs={'rows': 4, 'class': 'form-control', 'placeholder': 'Yorumunuzu buraya yazın...'}
+            ),
         }
