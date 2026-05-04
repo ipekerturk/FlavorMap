@@ -51,10 +51,18 @@ def restaurant_list(request):
 
 def restaurant_detail(request, id):
     restaurant = get_object_or_404(Restaurant, id=id)
-    reviews = Review.objects.filter(restaurant=restaurant)
+    reviews = Review.objects.filter(restaurant=restaurant, parent__isnull=True)
     menu_items = MenuItem.objects.filter(restaurant=restaurant)
 
-    if request.method == "POST" and request.user.is_authenticated:
+    user_review_exists = False
+    if request.user.is_authenticated:
+        user_review_exists = Review.objects.filter(
+            restaurant=restaurant,
+            user=request.user,
+            parent__isnull=True
+        ).exists()
+
+    if request.method == "POST" and request.user.is_authenticated and not user_review_exists:
         review_form = ReviewForm(request.POST)
         if review_form.is_valid():
             review = review_form.save(commit=False)
@@ -70,6 +78,7 @@ def restaurant_detail(request, id):
         'reviews': reviews,
         'review_form': review_form,
         'menu_items': menu_items,
+        'user_review_exists': user_review_exists,
     }
 
     return render(request, 'restaurant_detail.html', context)
@@ -153,7 +162,13 @@ def home(request):
 def add_review(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
 
-    if request.method == 'POST':
+    already_reviewed = Review.objects.filter(
+        restaurant=restaurant,
+        user=request.user,
+        parent__isnull=True
+    ).exists()
+
+    if request.method == 'POST' and not already_reviewed:
         comment = request.POST.get('comment')
         rating = request.POST.get('rating')
 
@@ -174,13 +189,14 @@ def add_review_reply(request, review_id):
     if request.method == 'POST':
         comment = request.POST.get('comment')
 
-        Review.objects.create(
-            restaurant=parent_review.restaurant,
-            user=request.user,
-            comment=comment,
-            rating=5,
-            parent=parent_review
-        )
+        if comment:
+            Review.objects.create(
+                restaurant=parent_review.restaurant,
+                user=request.user,
+                comment=comment,
+                rating=5,
+                parent=parent_review
+            )
 
     return redirect('restaurant_detail', id=parent_review.restaurant.id)
 
