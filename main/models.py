@@ -37,6 +37,7 @@ class Restaurant(models.Model):
 
     image = models.ImageField(upload_to='restaurants/', null=True, blank=True)
     opening_hours = models.CharField(max_length=200, blank=True, null=True)
+    is_featured = models.BooleanField(default=False)
 
     def average_rating(self):
         reviews = self.reviews.filter(parent__isnull=True)
